@@ -7,6 +7,7 @@ import { zodValidator } from "@tanstack/zod-form-adapter";
 import { trpc } from "@/app/_trpc/client";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 
 type Props = {};
 
@@ -27,7 +28,8 @@ export const Form = (props: Props) => {
     validatorAdapter: zodValidator,
     defaultValues: {
       title: "",
-      title2: "",
+      background: "",
+      hostOrganizationName: "",
       wantReactions: ["offline"] as (
         | "offline"
         | "online"
@@ -36,21 +38,20 @@ export const Form = (props: Props) => {
       )[],
     },
     onSubmit: async (props) => {
-      console.log(props);
       client.mutate(props.value);
     },
   });
 
   return (
     <Provider>
-      <label className={"text-base text-gray-600"} htmlFor="title">
+      <label className={"text-base text-subText"} htmlFor="title">
         どんなイベント？
       </label>
       <div className="mt-1 flex flex-col gap-y-2">
         <Field
           name={"title"}
           validators={{
-            onBlur: z.string().min(10, "10文字以上入力してください").max(100),
+            onBlur: z.string().min(10, "10文字以上入力してください").max(300),
           }}
         >
           {(field) => {
@@ -59,7 +60,7 @@ export const Form = (props: Props) => {
               <>
                 <Textarea
                   placeholder={
-                    "DDDって実際どんなふうに実装するの？って気になっている"
+                    "DDDって実際どんなふうに実装するの？って気になっている方が参加する、DDDのコードベース見せあいっこイベント"
                   }
                   id={field.name}
                   name={field.name}
@@ -67,42 +68,38 @@ export const Form = (props: Props) => {
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
-                <p className={"text-right"}>
-                  <label
-                    htmlFor={field.name}
-                    className={"text-xs text-gray-600"}
-                  >
-                    ひとが参加する
-                  </label>
-                  <FieldInfo field={field}></FieldInfo>
-                </p>
+                <FieldInfo field={field}></FieldInfo>
               </>
             );
           }}
         </Field>
+      </div>
+      <div className="mt-4">
         <Field
-          name={"title2"}
+          name={"background"}
           validators={{
-            onBlur: z.string().min(10, "10文字以上入力してください").max(100),
+            onBlur: z.string().min(10, "10文字以上入力してください").max(300),
           }}
         >
           {(field) => {
             return (
               <>
+                <label
+                  className={"text-base text-subText"}
+                  htmlFor="background"
+                >
+                  なんでこのイベントをやりたいの？
+                </label>
                 <Textarea
-                  placeholder={"DDDのソースコードを見せ合いっこ"}
+                  placeholder={
+                    "DDDについてのSNS上での議論を見るのに疲れました。実際にやっている人、強くやりたいと思っている人だけ集めて密度の高いイベントをやりたい"
+                  }
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                ></Textarea>
-                <p className={"text-right"}>
-                  <span className={"text-xs text-gray-600"}>
-                    するイベント！
-                  </span>
-                  <FieldInfo field={field}></FieldInfo>
-                </p>
+                />
               </>
             );
           }}
@@ -113,7 +110,7 @@ export const Form = (props: Props) => {
           {(field) => {
             return (
               <>
-                <label className={"text-base text-gray-600"} htmlFor="reaction">
+                <label className={"text-base text-subText"} htmlFor="reaction">
                   みんなから欲しいリアクション
                 </label>
                 <div className="flex flex-col mt-2 gap-y-2">
@@ -176,10 +173,10 @@ export const Form = (props: Props) => {
           onClick={handleSubmit}
           disabled={state.isSubmitting || !state.isValid}
           className={
-            "bg-amber-700 w-full hover:bg-amber-600 disabled:bg-gray-600"
+            "bg-primary w-full hover:bg-primary/60 disabled:bg-disabled"
           }
         >
-          保存する
+          起案する
         </Button>
       </div>
     </Provider>
@@ -195,7 +192,11 @@ const CheckboxFormItem: FC<{
   return (
     <label
       htmlFor={id}
-      className="flex items-center gap-x-1 p-4 bg-gray-100 rounded-lg text-sm cursor-pointer font-medium leading-none"
+      className={cn(
+        "flex items-center gap-x-1 p-4 rounded-lg text-sm cursor-pointer font-medium leading-none",
+        checked && "bg-primary_background",
+        !checked && "bg-gray_background",
+      )}
     >
       <Checkbox onCheckedChange={onChange} checked={checked} id={id} />
       {label}

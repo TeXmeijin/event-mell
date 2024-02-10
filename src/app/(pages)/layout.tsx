@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/layouts/site-footer";
 import SiteHeader from "@/components/layouts/site-header";
 
 interface AuthLayoutProps {
@@ -10,7 +9,6 @@ export default function PagesLayout({ children }: AuthLayoutProps) {
     <div className="min-h-screen">
       <SiteHeader />
       {children}
-      <SiteFooter />
     </div>
   );
 }

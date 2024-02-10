@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import crypto from "crypto";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -16,3 +17,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export const db = prisma;
+
+export const generateUUID = () => {
+  return crypto.randomUUID();
+};

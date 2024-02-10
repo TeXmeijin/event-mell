@@ -9,22 +9,68 @@ datasource db {
 }
 
 model User {
-  id         String       @id @unique
-  fullname   String?
-  username   String?
-  email      String       @unique
-  image      String?
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @default(now()) @map("updated_at")
-  EventDraft EventDraft[]
+  id                      String                      @id @unique
+  fullname                String?
+  username                String?
+  email                   String                      @unique
+  image                   String?
+  createdAt               DateTime                    @default(now()) @map("created_at")
+  updatedAt               DateTime                    @default(now()) @map("updated_at")
+  eventDrafts             EventDraft[]
+  eventDraftSentReactions EventDraftArrivedReaction[]
+  Notification            Notification[]
 }
 
 model EventDraft {
+  id                       String                      @id @unique
+  title                    String
+  background               String
+  hostOrganizationName     String
+  createdAt                DateTime                    @default(now()) @map("created_at")
+  updatedAt                DateTime                    @default(now()) @map("updated_at")
+  author                   User                        @relation(fields: [authorId], references: [id])
+  authorId                 String
+  wantReactions            EventDraftWantReaction[]
+  arrivedReactions         EventDraftArrivedReaction[]
+  ConnpassPageCreatedEvent ConnpassPageCreatedEvent[]
+}
+
+model EventDraftWantReaction {
+  eventDraft   EventDraft @relation(fields: [eventDraftId], references: [id])
+  eventDraftId String
+  reaction     String
+
+  @@unique([eventDraftId, reaction])
+}
+
+model EventDraftArrivedReaction {
+  eventDraft   EventDraft @relation(fields: [eventDraftId], references: [id])
+  eventDraftId String
+  reaction     String
+  comment      String?
+  authorId     String
+  author       User       @relation(fields: [authorId], references: [id])
+
+  @@unique([eventDraftId, reaction])
+}
+
+model Notification {
   id        String   @id @unique
-  title     String
-  content   String
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  type      String
+  read      Boolean  @default(false)
+  payload   String
+}
+
+// 初期リリースでイベントページまで巻くと仕様が多すぎるのでURLを通知できるに留める
+model ConnpassPageCreatedEvent {
+  id           String     @id @unique
+  createdAt    DateTime   @default(now()) @map("created_at")
+  title        String
+  connpassUrl  String
+  place        String
+  event        EventDraft @relation(fields: [eventDraftId], references: [id])
+  eventDraftId String
 }

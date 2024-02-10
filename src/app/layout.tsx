@@ -1,4 +1,3 @@
-import { ThemeProvider } from "@/components/providers/theme-providers";
 import TrpcProvider from "@/components/providers/trpc-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from "@/configs/site";
@@ -78,17 +77,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <TrpcProvider>
-        <html lang="en">
+        <html lang="ja">
           <body className={inter.className}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              disableTransitionOnChange
-            >
-              {children}
-              <GoogleAnalytics />
-              <Toaster />
-            </ThemeProvider>
+            {children}
+            <GoogleAnalytics />
+            <Toaster />
           </body>
         </html>
       </TrpcProvider>
